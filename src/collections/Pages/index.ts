@@ -101,6 +101,11 @@ export const Pages: CollectionConfig<'pages'> = {
             }),
 
             MetaDescriptionField({}),
+            {
+              name: 'keywords',
+              type: 'text',
+              label: 'Comma separated keywords',
+            },
             PreviewField({
               // if the `generateUrl` function is configured
               hasGenerateFn: true,
