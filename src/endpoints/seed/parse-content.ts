@@ -7,7 +7,7 @@ import payloadConfig from '@/payload.config'
 import { defaultLexical } from '@/fields/defaultLexical'
 import type { CollectionSlug, Payload, File } from 'payload'
 import type { GlobalSlug } from 'payload'
-import type { ContentBlock } from '@/payload-types'
+import type { ContentBlock, Glasstype, Post } from '@/payload-types'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 
@@ -48,10 +48,13 @@ const baseContentSchema = z.object({
 })
 
 type FrontMatter = z.infer<typeof baseContentSchema>
+type LexicalContent = NonNullable<
+  NonNullable<ContentBlock['columns']>[number]['richText'] | Post['content'] | Glasstype['content']
+>
 
 type ParsedMarkdown = {
   frontMatter: FrontMatter
-  lexicalContent: NonNullable<ContentBlock['columns']>[number]['richText']
+  lexicalContent: LexicalContent
   rawContent: string
 }
 
@@ -115,39 +118,6 @@ async function processMarkdownDirectory(dirPath: string): Promise<ParsedMarkdown
 
   return results
 }
-
-// async function main() {
-//   const path = join(import.meta.dirname, './content/pages')
-//   const pages = await processMarkdownDirectory(path)
-//   // const urls = pages
-//   //   .filter(({ frontMatter }) => frontMatter.featuredMedia?.discriminant === 'image')
-//   //   .map(({ frontMatter }) => {
-//   //     const media = frontMatter.featuredMedia
-//   //     if (media?.discriminant === 'image') {
-//   //       return fetchFileByURL(media.value.asset.replace(/@|[/]src/, baseAssetURL))
-//   //     }
-//   //     throw new Error('Expected featuredMedia to be image type')
-//   //   })
-
-//   const imageBuffersObject = await pages.reduce(
-//     async (accPromise, { frontMatter }) => {
-//       const acc = await accPromise
-//       if (frontMatter.featuredMedia?.discriminant === 'image') {
-//         const buffer = await fetchFileByURL(
-//           frontMatter.featuredMedia.value.asset.replace(/@|[/]src/, baseAssetURL),
-//         )
-//         return { ...acc, [frontMatter.slug]: buffer }
-//       }
-//       return acc
-//     },
-//     Promise.resolve({} as Record<string, File>),
-//   )
-
-//   console.log(imageBuffersObject)
-//   return pages
-// }
-
-// main()
 
 const collections: CollectionSlug[] = [
   'categories',
@@ -278,6 +248,7 @@ export const seed = async () => {
       payload.logger.info(`    Created page ${frontMatter.slug}`)
     }
 
+    payload.logger.info(`— Creating posts and media...`)
     for (const [index, post] of posts.entries()) {
       const { frontMatter, lexicalContent } = post
       payload.logger.info(`  Processing post ${index + 1}/${posts.length}: ${frontMatter.slug}`)
@@ -315,6 +286,46 @@ export const seed = async () => {
       payload.logger.info(`    Created post ${frontMatter.slug}`)
     }
 
+    payload.logger.info(`— Creating glasstypes and media...`)
+    for (const [index, glasstype] of glasstypes.entries()) {
+      const { frontMatter, lexicalContent } = glasstype
+      payload.logger.info(
+        `  Processing glasstype ${index + 1}/${glasstypes.length}: ${frontMatter.slug}`,
+      )
+
+      let imgDoc = null
+      if (frontMatter.featuredMedia?.discriminant === 'image') {
+        imgDoc = await payload.create({
+          collection: 'media',
+          data: {
+            alt: frontMatter.featuredMedia.value.alt,
+          },
+          file: images[frontMatter.slug],
+        })
+        payload.logger.info(`    Created media for ${frontMatter.slug}`)
+      }
+
+      await payload.create({
+        collection: 'glasstypes',
+        depth: 0,
+        context: {
+          disableRevalidate: true,
+        },
+        data: {
+          title: frontMatter.heading,
+          slug: frontMatter.slug,
+          meta: {
+            description: frontMatter.metaDescription,
+            title: frontMatter.title,
+            keywords: frontMatter.seoKeywords || frontMatter.seoKeyphrase,
+          },
+          heroImage: imgDoc,
+          content: lexicalContent,
+        },
+      })
+      payload.logger.info(`    Created glasstype ${frontMatter.slug}`)
+    }
+
     payload.logger.info('✓ Seeding completed successfully')
   } catch (error) {
     if (payload) {
@@ -346,7 +357,6 @@ async function fetchFileByURL(url: string): Promise<File> {
   }
 }
 
-// Run the seed function
 seed()
   .catch((error) => {
     console.error('Failed to seed database:', error)
