@@ -33,5 +33,31 @@ export const Banner: Block = {
       required: true,
     },
   ],
+  jsx: {
+    /**
+     * Convert from Lexical -> MDX:
+     * <Banner type="..." >child content</Banner>
+     */
+    export: ({ fields, lexicalToMarkdown }) => {
+      const props: any = {}
+      if (fields.type) {
+        props.type = fields.type
+      }
+
+      return {
+        children: lexicalToMarkdown({ editorState: fields.content }),
+        props,
+      }
+    },
+    /**
+     * Convert from MDX -> Lexical:
+     */
+    import: ({ children, markdownToLexical, props }) => {
+      return {
+        type: props?.type,
+        content: markdownToLexical({ markdown: children }),
+      }
+    },
+  },
   interfaceName: 'BannerBlock',
 }
