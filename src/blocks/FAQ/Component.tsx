@@ -6,17 +6,19 @@ import {
 } from '@/components/ui/accordion'
 import RichText from '@/components/RichText'
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
+import type { FAQBlock as FAQBlockProps } from 'src/payload-types'
 
 interface FAQItem {
   question: string
   answer: DefaultTypedEditorState
 }
 
-interface FAQProps {
+export type Props = {
   items: FAQItem[]
-}
+} & FAQBlockProps
 
-export function FAQ({ items }: FAQProps) {
+export const FAQ: React.FC<Props> = ({ items }) => {
+  console.log('items', items)
   return (
     <Accordion type="single" collapsible className="w-full">
       {items.map((item, index) => (
