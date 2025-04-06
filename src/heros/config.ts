@@ -28,6 +28,10 @@ export const hero: Field = {
           value: 'highImpact',
         },
         {
+          label: 'Animated',
+          value: 'animated',
+        },
+        {
           label: 'Medium Impact',
           value: 'mediumImpact',
         },
@@ -37,6 +41,11 @@ export const hero: Field = {
         },
       ],
       required: true,
+    },
+    {
+      name: 'enableRichText',
+      type: 'checkbox',
+      defaultValue: false,
     },
     {
       name: 'richText',
@@ -52,6 +61,9 @@ export const hero: Field = {
         },
       }),
       label: false,
+      admin: {
+        condition: (_, { enableRichText }) => enableRichText,
+      },
     },
     linkGroup({
       overrides: {

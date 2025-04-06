@@ -63,7 +63,7 @@ export default async function Page({ params: paramsPromise }: Args) {
     return <PayloadRedirects url={url} />
   }
 
-  const { hero, layout } = page
+  const { hero, layout, title } = page
 
   return (
     <article className="pt-16 pb-24">
@@ -73,7 +73,7 @@ export default async function Page({ params: paramsPromise }: Args) {
 
       {draft && <LivePreviewListener />}
 
-      <RenderHero {...hero} />
+      <RenderHero {...hero} title={title} />
       <RenderBlocks blocks={layout} />
     </article>
   )

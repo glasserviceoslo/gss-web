@@ -245,7 +245,7 @@ export const seed = async () => {
           },
           hero: imgDoc
             ? {
-                type: 'highImpact',
+                type: 'animated',
                 media: imgDoc,
               }
             : {

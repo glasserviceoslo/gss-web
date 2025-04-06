@@ -8,7 +8,7 @@ import { ContentBlock } from '@/blocks/Content/Component'
 import { FormBlock } from '@/blocks/Form/Component'
 import { MediaBlock } from '@/blocks/MediaBlock/Component'
 import { BannerBlock } from '@/blocks/Banner/Component'
-import { FAQ } from '@/blocks/FAQ/Component'
+import { FAQBlock } from '@/blocks/FAQ/Component'
 
 const blockComponents = {
   archive: ArchiveBlock,
@@ -17,7 +17,7 @@ const blockComponents = {
   formBlock: FormBlock,
   mediaBlock: MediaBlock,
   banner: BannerBlock,
-  faq: FAQ,
+  faqBlock: FAQBlock,
 }
 
 export const RenderBlocks: React.FC<{
@@ -32,7 +32,6 @@ export const RenderBlocks: React.FC<{
       <Fragment>
         {blocks.map((block, index) => {
           const { blockType } = block
-
           if (blockType && blockType in blockComponents) {
             const Block = blockComponents[blockType]
 
