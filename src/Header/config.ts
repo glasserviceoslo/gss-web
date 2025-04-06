@@ -82,8 +82,18 @@ export const Header: GlobalConfig = {
                   ],
                 },
               ],
+              admin: {
+                components: {
+                  RowLabel: '@/Header/RowLabel#RowLabel',
+                },
+              },
             },
           ],
+          admin: {
+            components: {
+              RowLabel: '@/Header/RowLabel#RowLabel',
+            },
+          },
         },
       ],
       maxRows: 6,
