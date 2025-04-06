@@ -193,7 +193,16 @@ export interface Page {
       | null;
     media?: (number | null) | Media;
   };
-  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock | BannerBlock | FAQBlock)[];
+  layout: (
+    | CallToActionBlock
+    | ContentBlock
+    | MediaBlock
+    | ArchiveBlock
+    | FormBlock
+    | BannerBlock
+    | FAQBlock
+    | ContainerBlock
+  )[];
   meta?: {
     title?: string | null;
     /**
@@ -784,7 +793,32 @@ export interface FAQBlock {
     | null;
   id?: string | null;
   blockName?: string | null;
-  blockType: 'faq';
+  blockType: 'faqBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContainerBlock".
+ */
+export interface ContainerBlock {
+  crop: 'default' | 'wide' | 'normal' | 'narrow';
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'container';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1129,7 +1163,8 @@ export interface PagesSelect<T extends boolean = true> {
         archive?: T | ArchiveBlockSelect<T>;
         formBlock?: T | FormBlockSelect<T>;
         banner?: T | BannerBlockSelect<T>;
-        faq?: T | FAQBlockSelect<T>;
+        faqBlock?: T | FAQBlockSelect<T>;
+        container?: T | ContainerBlockSelect<T>;
       };
   meta?:
     | T
@@ -1252,6 +1287,16 @@ export interface FAQBlockSelect<T extends boolean = true> {
         answer?: T;
         id?: T;
       };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContainerBlock_select".
+ */
+export interface ContainerBlockSelect<T extends boolean = true> {
+  crop?: T;
+  content?: T;
   id?: T;
   blockName?: T;
 }

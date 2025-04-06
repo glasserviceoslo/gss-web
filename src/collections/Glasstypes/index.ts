@@ -17,7 +17,7 @@ import { MediaBlock } from '../../blocks/MediaBlock/config'
 import { generatePreviewPath } from '../../utilities/generatePreviewPath'
 import { populateAuthors } from './hooks/populateAuthors'
 import { revalidateDelete, revalidatePost } from './hooks/revalidatePost'
-import { FAQ } from '@/blocks/FAQ/config'
+import { FAQBlock } from '@/blocks/FAQ/config'
 
 import {
   MetaDescriptionField,
@@ -27,6 +27,7 @@ import {
   PreviewField,
 } from '@payloadcms/plugin-seo/fields'
 import { slugField } from '@/fields/slug'
+import { Container } from '@/blocks/ContainerBlock/config'
 
 export const Glasstypes: CollectionConfig<'glasstypes'> = {
   slug: 'glasstypes',
@@ -93,7 +94,7 @@ export const Glasstypes: CollectionConfig<'glasstypes'> = {
                   return [
                     ...rootFeatures,
                     HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
-                    BlocksFeature({ blocks: [Banner, Code, MediaBlock, FAQ] }),
+                    BlocksFeature({ blocks: [Banner, Code, MediaBlock, FAQBlock, Container] }),
                     FixedToolbarFeature(),
                     InlineToolbarFeature(),
                     HorizontalRuleFeature(),

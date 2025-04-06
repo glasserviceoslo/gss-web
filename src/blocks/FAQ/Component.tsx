@@ -17,7 +17,7 @@ export type Props = {
   items: FAQItem[]
 } & FAQBlockProps
 
-export const FAQ: React.FC<Props> = ({ items }) => {
+export const FAQBlock: React.FC<Props> = ({ items }) => {
   console.log('items', items)
   return (
     <Accordion type="single" collapsible className="w-full">

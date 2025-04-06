@@ -6,7 +6,6 @@ import {
   InlineToolbarFeature,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
-
 import { link } from '@/fields/link'
 
 const columnFields: Field[] = [

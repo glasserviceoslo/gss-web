@@ -26,7 +26,8 @@ import {
   PreviewField,
 } from '@payloadcms/plugin-seo/fields'
 import { slugField } from '@/fields/slug'
-import { FAQ } from '@/blocks/FAQ/config'
+import { FAQBlock } from '@/blocks/FAQ/config'
+import { Container } from '@/blocks/ContainerBlock/config'
 export const Posts: CollectionConfig<'posts'> = {
   slug: 'posts',
   access: {
@@ -92,7 +93,7 @@ export const Posts: CollectionConfig<'posts'> = {
                   return [
                     ...rootFeatures,
                     HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
-                    BlocksFeature({ blocks: [Banner, Code, MediaBlock, FAQ] }),
+                    BlocksFeature({ blocks: [Banner, Code, MediaBlock, FAQBlock, Container] }),
                     FixedToolbarFeature(),
                     InlineToolbarFeature(),
                     HorizontalRuleFeature(),

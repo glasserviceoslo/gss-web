@@ -23,7 +23,7 @@ import type {
 import { BannerBlock } from '@/blocks/Banner/Component'
 import { CallToActionBlock } from '@/blocks/CallToAction/Component'
 import { cn } from '@/utilities/ui'
-import { FAQ } from '@/blocks/FAQ/Component'
+import { FAQBlock } from '@/blocks/FAQ/Component'
 
 type NodeTypes =
   | DefaultNodeTypes
@@ -57,9 +57,9 @@ const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) 
     ),
     code: ({ node }) => <CodeBlock className="col-start-2" {...node.fields} />,
     cta: ({ node }) => <CallToActionBlock {...node.fields} />,
-    faq: ({ node }) => {
+    faqBlock: ({ node }) => {
       console.log('node', node)
-      return <FAQ {...node.fields} items={node.fields.items || []} />
+      return <FAQBlock {...node.fields} items={node.fields.items || []} />
     },
   },
   heading: ({ node, nodesToJSX }) => {

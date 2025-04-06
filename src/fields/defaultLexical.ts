@@ -6,17 +6,29 @@ import {
   ParagraphFeature,
   lexicalEditor,
   UnderlineFeature,
+  HeadingFeature,
+  HorizontalRuleFeature,
+  BlockquoteFeature,
+  OrderedListFeature,
+  UnorderedListFeature,
+  EXPERIMENTAL_TableFeature,
   type LinkFields,
 } from '@payloadcms/richtext-lexical'
 
 export const defaultLexical = lexicalEditor({
   features: [
+    HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
+    HorizontalRuleFeature(),
+    BlockquoteFeature(),
     ParagraphFeature(),
     UnderlineFeature(),
     BoldFeature(),
     ItalicFeature(),
+    OrderedListFeature(),
+    UnorderedListFeature(),
+    EXPERIMENTAL_TableFeature(),
     LinkFeature({
-      enabledCollections: ['pages', 'posts'],
+      enabledCollections: ['pages', 'posts', 'glasstypes'],
       fields: ({ defaultFields }) => {
         const defaultFieldsWithoutUrl = defaultFields.filter((field) => {
           if ('name' in field && field.name === 'url') return false

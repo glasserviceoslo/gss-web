@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useCalTheme } from '@/utilities/useUpdateCalTheme'
+import { useCalTheme } from '@/utilities/use-update-cal-theme'
 import PulsatingButton from '../ui/pulsating-button'
 
 export function BookBefaring({ pulsate = false, text = 'Gratis Befaring' }) {

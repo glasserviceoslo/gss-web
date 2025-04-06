@@ -165,6 +165,17 @@ export const seed = async () => {
         .filter((collection) => Boolean(payload.collections[collection].config.versions))
         .map((collection) => payload.db.deleteVersions({ collection, where: {} })),
     )
+    payload.logger.info(`— Seeding demo author and user...`)
+
+    await payload.delete({
+      collection: 'users',
+      depth: 0,
+      where: {
+        email: {
+          equals: 'demo-author@example.com',
+        },
+      },
+    })
 
     payload.logger.info(`— Processing markdown files...`)
     const pagesPath = join(import.meta.dirname, './content/pages')
@@ -174,6 +185,14 @@ export const seed = async () => {
     const pages = await processMarkdownDirectory(pagesPath)
     const posts = await processMarkdownDirectory(postsPath)
     const glasstypes = await processMarkdownDirectory(glasstypesPath)
+    await payload.create({
+      collection: 'users',
+      data: {
+        name: 'Demo Author',
+        email: 'demo-author@example.com',
+        password: 'password',
+      },
+    })
 
     payload.logger.info(`✓ Processed ${pages.length} markdown files`)
 

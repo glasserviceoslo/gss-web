@@ -1,3 +1,6 @@
+'use client'
+
+import { useTheme } from '@/providers/Theme'
 import clsx from 'clsx'
 import React from 'react'
 
@@ -9,6 +12,7 @@ interface Props {
 
 export const Logo = (props: Props) => {
   const { loading: loadingFromProps, priority: priorityFromProps, className } = props
+  const { theme } = useTheme()
 
   const loading = loadingFromProps || 'lazy'
   const priority = priorityFromProps || 'low'
@@ -23,7 +27,7 @@ export const Logo = (props: Props) => {
       fetchPriority={priority}
       decoding="async"
       className={clsx('max-w-[9.375rem] w-full h-[44px]', className)}
-      src="/assets/logo-light.svg"
+      src={theme === 'dark' ? '/assets/logo-light.svg' : '/assets/logo-dark.svg'}
     />
   )
 }
