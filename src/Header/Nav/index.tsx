@@ -10,12 +10,12 @@ import { SearchIcon } from 'lucide-react'
 import { BookBefaring } from '@/components/BookBefaring'
 
 export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
-  const navItems = data?.navItems || []
+  const navItems = data.navItems || []
 
   return (
     <nav className="flex gap-3 items-center">
-      {navItems.map(({ link }, i) => {
-        return <CMSLink key={i} {...link} appearance="link" />
+      {navItems.map(({ item }, i) => {
+        return <CMSLink key={i} {...item.link} appearance="link" />
       })}
       <BookBefaring pulsate={true} />
       <Link href="/search">
