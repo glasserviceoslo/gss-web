@@ -145,9 +145,7 @@ export const seed = async () => {
       globals.map((global) =>
         payload.updateGlobal({
           slug: global,
-          data: {
-            navItems: [],
-          },
+          data: {},
           depth: 0,
           context: {
             disableRevalidate: true,
@@ -257,6 +255,7 @@ export const seed = async () => {
               blockType: 'content',
               columns: [
                 {
+                  size: 'full',
                   richText: lexicalContent,
                 },
               ],

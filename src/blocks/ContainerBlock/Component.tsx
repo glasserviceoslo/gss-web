@@ -1,3 +1,4 @@
+'use client'
 import type { ContainerBlock as ContainerBlockProps } from '@/payload-types'
 import React from 'react'
 import RichText from '@/components/RichText'

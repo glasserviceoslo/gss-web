@@ -49,12 +49,17 @@ export const link: LinkType = ({ appearances, disableLabel = false, overrides = 
                 label: 'Custom URL',
                 value: 'custom',
               },
+              {
+                label: 'Text',
+                value: 'text',
+              },
             ],
           },
           {
             name: 'newTab',
             type: 'checkbox',
             admin: {
+              condition: (_, siblingData) => siblingData?.type !== 'text',
               style: {
                 alignSelf: 'flex-end',
               },

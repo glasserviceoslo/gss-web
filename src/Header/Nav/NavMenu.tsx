@@ -17,6 +17,8 @@ import type { Header } from '@/payload-types'
 import { CMSLink } from '@/components/Link'
 
 type NavItem = NonNullable<Header['navItems']>[number]
+type NavChild = NonNullable<NavItem['children']>[number]
+type NavGrandchild = NonNullable<NavChild['grandchildren']>[number]
 
 interface NavMenuProps {
   menuItems: NavItem[]
@@ -31,7 +33,6 @@ export function NavMenu({ menuItems }: NavMenuProps) {
 
   const renderMenuItem = (item: NavItem, level: number = 0) => {
     const hasChildren = item.children && item.children.length > 0
-    const hasGrandchildren = item.grandchildren && item.grandchildren.length > 0
 
     if (level === 0) {
       return (
@@ -57,38 +58,41 @@ export function NavMenu({ menuItems }: NavMenuProps) {
         </NavigationMenuItem>
       )
     } else if (level === 1) {
+      const child = item as NavChild
+      const hasGrandchildren = child.grandchildren && child.grandchildren.length > 0
+
       if (hasGrandchildren) {
         return (
-          <li key={item.item.link.label}>
+          <li key={child.item.link.label}>
             <Collapsible
-              open={openItems[item.item.link.label]}
-              onOpenChange={() => toggleItem(item.item.link.label)}
+              open={openItems[child.item.link.label]}
+              onOpenChange={() => toggleItem(child.item.link.label)}
             >
               <div className="flex items-center justify-between">
                 <a
-                  href={getItemHref(item.item)}
+                  href={getItemHref(child.item)}
                   className="flex-grow py-2 text-sm font-medium hover:text-accent-foreground"
                 >
-                  {item.item.link.label}
+                  {child.item.link.label}
                 </a>
                 <CollapsibleTrigger className="p-2">
                   <ChevronDown
                     className={cn(
                       'h-4 w-4 transition-transform',
-                      openItems[item.item.link.label] && 'rotate-180',
+                      openItems[child.item.link.label] && 'rotate-180',
                     )}
                   />
                 </CollapsibleTrigger>
               </div>
               <CollapsibleContent>
                 <ul className="mt-2 space-y-1 pl-4">
-                  {item.grandchildren?.map((grandchild) => (
-                    <li key={grandchild.navigationTitle}>
+                  {child.grandchildren?.map((grandchild: NavGrandchild) => (
+                    <li key={grandchild.item.link.label}>
                       <a
                         href={getItemHref(grandchild.item)}
                         className="block py-1 text-sm text-muted-foreground hover:text-accent-foreground"
                       >
-                        {grandchild.navigationTitle}
+                        {grandchild.item.link.label}
                       </a>
                     </li>
                   ))}
@@ -99,13 +103,13 @@ export function NavMenu({ menuItems }: NavMenuProps) {
         )
       } else {
         return (
-          <li key={item.item.link.label}>
+          <li key={child.item.link.label}>
             <CMSLink
               appearance="link"
-              {...item.item.link}
+              {...child.item.link}
               className="block py-2 text-sm font-medium hover:text-accent-foreground"
             >
-              {item.item.link.label}
+              {child.item.link.label}
             </CMSLink>
           </li>
         )

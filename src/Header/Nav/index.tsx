@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React from 'react'
 
 import type { Header as HeaderType } from '@/payload-types'
 
@@ -10,12 +10,26 @@ import { BookBefaring } from '@/components/BookBefaring'
 import { ThemeSelector } from '@/providers/Theme/ThemeSelector'
 import { NavMenu } from './NavMenu'
 import { Logo } from '@/components/Logo'
+import { MobileMenu } from './MobileMenu'
+import { cn } from '@/utilities/ui'
+import { useQueryState } from 'nuqs'
 
 export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
+  const [isAdminBarVisible] = useQueryState('adminBar', {
+    parse: (value: string) => value === 'true',
+    serialize: (value: boolean) => value.toString(),
+  })
   const navItems = data.navItems || []
 
   return (
-    <nav className="fixed left-0 top-0 z-20 w-full border-b border-border bg-primary-foreground px-4 py-3">
+    <nav
+      className={cn(
+        'fixed left-0 top-0 z-20 w-full border-b border-border bg-primary-foreground px-4 py-3',
+        {
+          'top-6 pt-6': isAdminBarVisible,
+        },
+      )}
+    >
       <div className="flex flex-wrap items-center justify-between px-4 lg:px-12">
         <Link href="/">
           <Logo loading="eager" priority="high" />
@@ -27,7 +41,7 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
           </Link>
           <ThemeSelector />
           <BookBefaring pulsate />
-          {/* <MobileMenu client:load menuItems={menuItems} /> */}
+          <MobileMenu menuItems={navItems} />
         </div>
         <div className="hidden w-full items-center justify-between md:order-1 md:flex md:w-auto">
           <NavMenu menuItems={navItems} />

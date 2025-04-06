@@ -171,7 +171,7 @@ export interface Page {
     links?:
       | {
           link: {
-            type?: ('reference' | 'custom') | null;
+            type?: ('reference' | 'custom' | 'text') | null;
             newTab?: boolean | null;
             reference?:
               | ({
@@ -422,7 +422,7 @@ export interface CallToActionBlock {
   links?:
     | {
         link: {
-          type?: ('reference' | 'custom') | null;
+          type?: ('reference' | 'custom' | 'text') | null;
           newTab?: boolean | null;
           reference?:
             | ({
@@ -472,7 +472,7 @@ export interface ContentBlock {
         } | null;
         enableLink?: boolean | null;
         link?: {
-          type?: ('reference' | 'custom') | null;
+          type?: ('reference' | 'custom' | 'text') | null;
           newTab?: boolean | null;
           reference?:
             | ({
@@ -1759,7 +1759,7 @@ export interface Header {
     | {
         item: {
           link: {
-            type?: ('reference' | 'custom') | null;
+            type?: ('reference' | 'custom' | 'text') | null;
             newTab?: boolean | null;
             reference?:
               | ({
@@ -1778,7 +1778,7 @@ export interface Header {
           | {
               item: {
                 link: {
-                  type?: ('reference' | 'custom') | null;
+                  type?: ('reference' | 'custom' | 'text') | null;
                   newTab?: boolean | null;
                   reference?:
                     | ({
@@ -1797,7 +1797,7 @@ export interface Header {
                 | {
                     item: {
                       link: {
-                        type?: ('reference' | 'custom') | null;
+                        type?: ('reference' | 'custom' | 'text') | null;
                         newTab?: boolean | null;
                         reference?:
                           | ({
@@ -1830,23 +1830,29 @@ export interface Header {
  */
 export interface Footer {
   id: number;
-  navItems?:
+  navGroups?:
     | {
-        link: {
-          type?: ('reference' | 'custom') | null;
-          newTab?: boolean | null;
-          reference?:
-            | ({
-                relationTo: 'pages';
-                value: number | Page;
-              } | null)
-            | ({
-                relationTo: 'posts';
-                value: number | Post;
-              } | null);
-          url?: string | null;
-          label: string;
-        };
+        label: string;
+        items?:
+          | {
+              link: {
+                type?: ('reference' | 'custom' | 'text') | null;
+                newTab?: boolean | null;
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
+                    } | null);
+                url?: string | null;
+                label: string;
+              };
+              id?: string | null;
+            }[]
+          | null;
         id?: string | null;
       }[]
     | null;
@@ -1921,17 +1927,23 @@ export interface HeaderSelect<T extends boolean = true> {
  * via the `definition` "footer_select".
  */
 export interface FooterSelect<T extends boolean = true> {
-  navItems?:
+  navGroups?:
     | T
     | {
-        link?:
+        label?: T;
+        items?:
           | T
           | {
-              type?: T;
-              newTab?: T;
-              reference?: T;
-              url?: T;
-              label?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    label?: T;
+                  };
+              id?: T;
             };
         id?: T;
       };
