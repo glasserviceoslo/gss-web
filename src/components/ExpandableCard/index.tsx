@@ -44,7 +44,7 @@ export function ExpandableCard(props: Props) {
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [active])
 
-  useOutsideClick(ref, (event: MouseEvent) => {
+  useOutsideClick(ref, (event: MouseEvent | TouchEvent) => {
     const calModalBoxes = document.getElementsByTagName('cal-modal-box')
     const isCalElement = Array.from(calModalBoxes).includes(event.target as Element)
 
