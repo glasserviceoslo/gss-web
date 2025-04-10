@@ -10,6 +10,7 @@ import type { GlobalSlug } from 'payload'
 import type { ContentBlock, Glasstype, Post } from '@/payload-types'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { inspect } from 'node:util'
 
 const baseContentSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -58,10 +59,9 @@ type ParsedMarkdown = {
   rawContent: string
 }
 
-/**
- * Parse a markdown file and convert its content to Lexical format
- */
-async function parseMarkdownFile(filePath: string): Promise<ParsedMarkdown> {
+const baseAssetURL = 'https://raw.githubusercontent.com/glasserviceoslo/glass.no/main/src'
+
+async function parseMarkdownFile(filePath: string, payload: Payload): Promise<ParsedMarkdown> {
   const fileContent = await readFile(filePath, 'utf-8')
   const fileName =
     filePath
@@ -77,6 +77,54 @@ async function parseMarkdownFile(filePath: string): Promise<ParsedMarkdown> {
 
   const config = await payloadConfig
 
+  // Extract all image paths from markdown
+  const imageMatches = content.matchAll(/!\[(.*?)\]\((.*?)\)/g)
+  const images: { path: string; caption: string }[] = []
+  let processedContent = content
+
+  for (const match of imageMatches) {
+    const [, caption = '', path = ''] = match
+    if (path) {
+      // Clean the path by removing @/ prefix and any backslashes
+      const cleanPath = path.replace('@/', '').replace(/\\/g, '')
+      images.push({
+        path: cleanPath,
+        caption,
+      })
+    }
+  }
+
+  // Create media documents for each image
+  const mediaDocs: Record<string, string> = {}
+  for (const { path } of images) {
+    try {
+      // Construct the GitHub raw content URL
+      const fullPath = `${baseAssetURL}/${path}`
+      console.log(`Fetching image from: ${fullPath}`) // Debug log
+
+      const buffer = await fetchFileByURL(fullPath)
+
+      const mediaDoc = await payload.create({
+        collection: 'media',
+        data: {
+          alt: path.split('/').pop() || 'Image',
+        },
+        file: buffer,
+      })
+
+      // Store the media document ID for later use
+      mediaDocs[path] = mediaDoc.id.toString()
+
+      // Replace markdown image with MediaBlock component
+      processedContent = processedContent.replace(
+        new RegExp(`!\\[(.*?)\\]\\(${path}\\)`),
+        `<MediaBlock media="${mediaDoc.id}" />`,
+      )
+    } catch (error) {
+      console.error(`Failed to create media document for ${path}:`, error)
+    }
+  }
+
   const instantiatedEditorConfig = await editorConfigFactory.fromEditor({
     config: config,
     editor: defaultLexical,
@@ -84,20 +132,23 @@ async function parseMarkdownFile(filePath: string): Promise<ParsedMarkdown> {
 
   const lexicalContent = convertMarkdownToLexical({
     editorConfig: instantiatedEditorConfig,
-    markdown: content,
+    markdown: processedContent,
   }) as NonNullable<ParsedMarkdown['lexicalContent']>
 
   return {
     frontMatter: parsedData,
     lexicalContent,
-    rawContent: content,
+    rawContent: processedContent,
   }
 }
 
 /**
  * Process all markdown files in a directory
  */
-async function processMarkdownDirectory(dirPath: string): Promise<ParsedMarkdown[]> {
+async function processMarkdownDirectory(
+  dirPath: string,
+  payload: Payload,
+): Promise<ParsedMarkdown[]> {
   const absolutePath = resolve(dirPath)
   const files = await readdir(absolutePath)
 
@@ -108,7 +159,7 @@ async function processMarkdownDirectory(dirPath: string): Promise<ParsedMarkdown
   for (const file of markdownFiles) {
     const filePath = join(absolutePath, file)
     try {
-      const parsedFile = await parseMarkdownFile(filePath)
+      const parsedFile = await parseMarkdownFile(filePath, payload)
       results.push(parsedFile)
       console.log(`Processed: ${file}`)
     } catch (error) {
@@ -129,9 +180,6 @@ const collections: CollectionSlug[] = [
   'search',
 ]
 const globals: GlobalSlug[] = ['header', 'footer']
-
-const baseAssetURL =
-  'https://raw.githubusercontent.com/glasserviceoslo/glass.no/refs/heads/main/src'
 
 export const seed = async () => {
   let payload: Payload = null as unknown as Payload
@@ -180,9 +228,9 @@ export const seed = async () => {
     const postsPath = join(import.meta.dirname, './content/posts')
     const glasstypesPath = join(import.meta.dirname, './content/glasstypes')
 
-    const pages = await processMarkdownDirectory(pagesPath)
-    const posts = await processMarkdownDirectory(postsPath)
-    const glasstypes = await processMarkdownDirectory(glasstypesPath)
+    const pages = await processMarkdownDirectory(pagesPath, payload)
+    const posts = await processMarkdownDirectory(postsPath, payload)
+    const glasstypes = await processMarkdownDirectory(glasstypesPath, payload)
     await payload.create({
       collection: 'users',
       data: {
@@ -377,10 +425,26 @@ async function fetchFileByURL(url: string): Promise<File> {
 
 seed()
   .catch((error) => {
-    console.error('Failed to seed database:', error)
+    console.error(
+      'Failed to seed database:',
+      inspect(error, { showHidden: true, depth: null, colors: true }),
+    )
     process.exit(1)
   })
   .finally(() => {
     console.log('Seed completed')
     process.exit(0)
   })
+
+// async function test() {
+//   const pagesPath = join(import.meta.dirname, './content/pages')
+//   const payload = await getPayload({ config })
+//   const pages = await processMarkdownDirectory(pagesPath, payload)
+//   pages
+//     .filter((page) => page.frontMatter.slug.includes('smijern'))
+//     .forEach((page) => {
+//       console.log(inspect(page.lexicalContent, { showHidden: true, depth: null, colors: true }))
+//     })
+// }
+
+// test()

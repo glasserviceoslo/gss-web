@@ -11,4 +11,20 @@ export const MediaBlock: Block = {
       required: true,
     },
   ],
+  jsx: {
+    export: (data) => {
+      return {
+        children: '',
+        props: {
+          media: data.fields.media,
+        },
+      }
+    },
+    import: (data) => {
+      console.log(data)
+      return {
+        media: data.props?.media,
+      }
+    },
+  },
 }

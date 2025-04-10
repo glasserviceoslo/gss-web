@@ -13,7 +13,9 @@ import {
   UnorderedListFeature,
   EXPERIMENTAL_TableFeature,
   type LinkFields,
+  BlocksFeature,
 } from '@payloadcms/richtext-lexical'
+import { MediaBlock } from '@/blocks/MediaBlock/config'
 
 export const defaultLexical = lexicalEditor({
   features: [
@@ -27,6 +29,7 @@ export const defaultLexical = lexicalEditor({
     OrderedListFeature(),
     UnorderedListFeature(),
     EXPERIMENTAL_TableFeature(),
+    BlocksFeature({ blocks: [MediaBlock] }),
     LinkFeature({
       enabledCollections: ['pages', 'posts', 'glasstypes'],
       fields: ({ defaultFields }) => {
