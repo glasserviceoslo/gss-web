@@ -43,6 +43,11 @@ ENV NODE_ENV production
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
+# Install SQLite and set up database directory
+RUN apk add --no-cache sqlite
+RUN mkdir -p /app/data
+RUN chown -R nextjs:nodejs /app/data
+
 # Remove this line if you do not have this folder
 COPY --from=builder /app/public ./public
 
@@ -54,12 +59,14 @@ RUN chown nextjs:nodejs .next
 # https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/gss-web.db /app/data/gss-web.db
 
 USER nextjs
 
 EXPOSE 3000
 
 ENV PORT 3000
+ENV DATABASE_URI file:/app/data/gss-web.db
 
 # server.js is created by next build from the standalone output
 # https://nextjs.org/docs/pages/api-reference/next-config-js/output
