@@ -59,14 +59,14 @@ RUN chown nextjs:nodejs .next
 # https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-COPY --from=builder --chown=nextjs:nodejs /app/gss-web.db /app/data/gss-web.db
+COPY --from=builder --chown=nextjs:nodejs /app/gss-web.db /app/gss-web.db
 
 USER nextjs
 
 EXPOSE 3000
 
 ENV PORT 3000
-ENV DATABASE_URI file:/app/data/gss-web.db
+ENV DATABASE_URI file:/app/gss-web.db
 
 # server.js is created by next build from the standalone output
 # https://nextjs.org/docs/pages/api-reference/next-config-js/output
