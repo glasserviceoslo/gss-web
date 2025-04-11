@@ -1,5 +1,5 @@
 import { withPayload } from '@payloadcms/next/withPayload'
-
+import path from 'node:path'
 import redirects from './redirects.js'
 
 const NEXT_PUBLIC_SERVER_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
@@ -23,9 +23,12 @@ const nextConfig = {
   },
   reactStrictMode: true,
   redirects,
+  outputFileTracingRoot: path.join(import.meta.dirname),
+  outputFileTracingIncludes: {
+    '/admin/*': ['./node_modules/@libsql/**/*'],
+  },
 }
 
 export default withPayload(nextConfig, {
   devBundleServerPackages: false,
-  adminRoute: '/admin',
 })
